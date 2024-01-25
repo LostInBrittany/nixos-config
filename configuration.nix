@@ -119,7 +119,7 @@
     dmenu
     gimp
     inkscape
-    dropbox
+    # dropbox
     xclip
     emoji-picker
     ideogram

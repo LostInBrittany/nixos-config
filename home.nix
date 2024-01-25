@@ -14,7 +14,7 @@ home-manager.users.horacio = { pkgs, ... }: {
   };
 
   services.dropbox = {
-   enable = true;
+    enable = true;
   };
 
   programs.direnv = {
@@ -53,9 +53,7 @@ home-manager.users.horacio = { pkgs, ... }: {
   home.packages = [
     pkgs.httpie
     pkgs.keepassxc
-    pkgs.inkscape
     pkgs.zoom-us
-    pkgs.gimp
     pkgs.zellij
     pkgs.libsForQt5.okular
     pkgs.gnome.gpaste
