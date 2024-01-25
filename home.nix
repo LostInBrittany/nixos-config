@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
-
+  
 {
+
 
 home-manager.users.horacio = { pkgs, ... }: {
   # Let Home Manager install and manage itself
@@ -49,6 +50,8 @@ home-manager.users.horacio = { pkgs, ... }: {
   home.sessionPath = [
     "$HOME/.local/bin"
   ];
+
+  
 
   home.packages = [
     pkgs.httpie

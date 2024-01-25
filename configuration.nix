@@ -11,6 +11,21 @@
     '';
   };
 
+  nixpkgs.overlays = [
+    ( final: prev:
+      {
+        dropbox = prev.dropbox.overrideAttrs (old: {
+          patches = (old.patches or []) ++ [
+           (prev.fetchpatch {
+             url = "https://github.com/NixOS/nixpkgs/pull/277422.patch";
+             hash= "sha256-AYJhfyxAeksn9nu7Qpt5ykBctsRjMZR7raaTKslpG60=";
+            })
+          ];
+        });
+      }
+    )
+  ];
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -119,7 +134,8 @@
     dmenu
     gimp
     inkscape
-    # dropbox
+ #   dropbox
+ #   dropbox-cli
     xclip
     emoji-picker
     ideogram
@@ -142,8 +158,10 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-  
+  services.openssh.enable = true;  
+
+  services.flatpak.enable = true;
+
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
