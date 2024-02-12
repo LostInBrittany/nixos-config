@@ -140,13 +140,22 @@
     emoji-picker
     ideogram
     google-chrome
+    gnomeExtensions.appindicator
     gnomeExtensions.hibernate-status-button
     gnomeExtensions.dash-to-dock
     gnomeExtensions.dash2dock-lite
     gnomeExtensions.emoji-copy
     noto-fonts-color-emoji
+    ollama
   ];
 
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    # Certain features, including CLI integration and system authentication support,
+    # require enabling PolKit integration on some desktop environments (e.g. Plasma).
+    polkitPolicyOwners = [ "horacio" ];
+  };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
