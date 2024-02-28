@@ -14,9 +14,6 @@ home-manager.users.horacio = { pkgs, ... }: {
     EDITOR = "nvim";
   };
 
-  services.dropbox = {
-    enable = true;
-  };
 
   programs.direnv = {
     enable = true;
@@ -31,13 +28,6 @@ home-manager.users.horacio = { pkgs, ... }: {
 
   programs.bash.enable = true;
 
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; [
-      vscodevim.vim
-      jnoortheen.nix-ide
-    ];
-  };
 
   programs.git = {
     enable = true;

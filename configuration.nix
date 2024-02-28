@@ -7,24 +7,10 @@
 {
   nix = {
     extraOptions = ''
-      experimental-features = nix-command
+      experimental-features = nix-command flakes
     '';
   };
 
-  nixpkgs.overlays = [
-    ( final: prev:
-      {
-        dropbox = prev.dropbox.overrideAttrs (old: {
-          patches = (old.patches or []) ++ [
-           (prev.fetchpatch {
-             url = "https://github.com/NixOS/nixpkgs/pull/277422.patch";
-             hash= "sha256-AYJhfyxAeksn9nu7Qpt5ykBctsRjMZR7raaTKslpG60=";
-            })
-          ];
-        });
-      }
-    )
-  ];
 
   imports =
     [ # Include the results of the hardware scan.
@@ -32,6 +18,7 @@
       <home-manager/nixos>
       ./home.nix
     ];
+	
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -112,7 +99,7 @@
   users.users.horacio = {
     isNormalUser = true;
     description = "Horacio Gonzalez";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" ];   
     packages = with pkgs; [
       firefox
     #  thunderbird
@@ -129,17 +116,19 @@
     wget
     curl
     git
-    vscode
+    # vscode via Flatpak
     python3
     dmenu
     gimp
     inkscape
- #   dropbox
- #   dropbox-cli
     xclip
     emoji-picker
     ideogram
-    google-chrome
+    dig
+    gh
+    nerdfonts
+    appimage-run
+    # google-chrome via Flatpak
     gnomeExtensions.appindicator
     gnomeExtensions.hibernate-status-button
     gnomeExtensions.dash-to-dock
@@ -147,6 +136,11 @@
     gnomeExtensions.emoji-copy
     noto-fonts-color-emoji
     ollama
+    nodejs_latest
+    mongosh
+    postgresql
+    redis
+    libossp_uuid
   ];
 
   programs._1password.enable = true;
@@ -156,6 +150,12 @@
     # require enabling PolKit integration on some desktop environments (e.g. Plasma).
     polkitPolicyOwners = [ "horacio" ];
   };
+
+  # Docker
+  virtualisation.docker.enable = true;
+  users.extraGroups.docker.members = [ "horacio" ];
+
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -171,6 +171,45 @@
 
   services.flatpak.enable = true;
 
+  system.fsPackages = [ pkgs.bindfs ];
+  fileSystems = let
+    mkRoSymBind = path: {
+      device = path;
+      fsType = "fuse.bindfs";
+      options = [ "ro" "resolve-symlinks" "x-gvfs-hide" ];
+    };
+    aggregatedIcons = pkgs.buildEnv {
+      name = "system-icons";
+      paths = with pkgs; [
+        #libsForQt5.breeze-qt5  # for plasma
+        gnome.gnome-themes-extra
+      ];
+      pathsToLink = [ "/share/icons" ];
+    };
+    aggregatedFonts = pkgs.buildEnv {
+      name = "system-fonts";
+      paths = config.fonts.packages;
+      pathsToLink = [ "/share/fonts" ];
+    };
+  in {
+    "/usr/share/icons" = mkRoSymBind "${aggregatedIcons}/share/icons";
+    "/usr/local/share/fonts" = mkRoSymBind "${aggregatedFonts}/share/fonts";
+  };
+
+  fonts = {
+    fontDir.enable = true;
+    packages = with pkgs; [
+      noto-fonts
+      noto-fonts-emoji
+      noto-fonts-cjk
+    ];
+  };
+
+
+  hardware.tuxedo-rs = {
+    enable = true;
+    tailor-gui.enable = true;
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -187,6 +226,5 @@
   system.stateVersion = "23.11"; # Did you read the comment?
 
   home-manager.useGlobalPkgs = true;
-
 
 }
